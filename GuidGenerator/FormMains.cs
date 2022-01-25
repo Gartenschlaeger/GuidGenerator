@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Windows.Forms;
 
 namespace GuidGenerator
@@ -39,18 +41,38 @@ namespace GuidGenerator
 
         private void CopyToClipboard()
         {
-            if (lbxGuids.SelectedIndex == -1)
+            if (lbxGuids.SelectedIndices.Count == 0)
                 return;
 
-            Clipboard.SetText(lbxGuids.SelectedItem.ToString());
+            // convert to int list
+            var indicees = new List<int>();
+            foreach (int index in lbxGuids.SelectedIndices)
+            {
+                indicees.Add(index);
+            }
 
-            if (chbRemoveCopied.Checked)
-                lbxGuids.Items.RemoveAt(lbxGuids.SelectedIndex);
+            var builder = new StringBuilder();
+
+            // iterate through selected indicees
+            lbxGuids.BeginUpdate();
+            for (int i = indicees.Count - 1; i >= 0; i--)
+            {
+                var index = indicees[i];
+
+                // copy text of item
+                var text = lbxGuids.Items[index].ToString();
+                builder.AppendLine(text);
+
+                // remove selected items
+                if (chbRemoveCopied.Checked)
+                    lbxGuids.Items.RemoveAt(index);
+            }
+            lbxGuids.EndUpdate();
+
+            // copy text to clipboard
+            Clipboard.SetText(builder.ToString());
 
             RefreshGuiState();
-
-            MessageBox.Show("The selected guid was copied to the clipboard.", "Info",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         #endregion
