@@ -61,7 +61,11 @@ namespace GuidGenerator
 
                 // copy text of item
                 var text = lbxGuids.Items[index].ToString();
-                builder.AppendLine(text);
+
+                if (indicees.Count == 1)
+                    builder.Append(text);
+                else
+                    builder.AppendLine(text);
 
                 // remove selected items
                 if (chbRemoveCopied.Checked)
